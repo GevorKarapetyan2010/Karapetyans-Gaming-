@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KARAPETYANS GAMES</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#10111b;color:white}
+header{padding:22px 16px;text-align:center;background:#191b2b;border-bottom:2px solid #745cff}
+h1{margin:0;color:#a995ff;font-size:clamp(24px,5vw,38px)}
+header p{color:#b9bbd0;margin-bottom:0}
+nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px}
+button{background:#745cff;color:white;border:0;padding:11px 15px;border-radius:10px;font-weight:bold;cursor:pointer}
+button:hover{background:#927fff}
+main{max-width:1000px;margin:auto;padding:16px}
+section{background:#191b2b;padding:18px;border-radius:16px;margin-bottom:18px}
+h2{margin-top:0;color:#b6a5ff}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.game{background:#25283b;padding:16px;border-radius:14px;text-align:center}
+.emoji{font-size:45px}
+#number{font-size:30px;color:#b6a5ff;font-weight:bold}
+input{width:100%;padding:12px;border-radius:9px;border:1px solid #555970;background:#10111b;color:white;margin:8px 0}
+#messages{height:130px;overflow:auto;background:#10111b;padding:10px;border-radius:10px;margin-bottom:8px}
+.small{color:#b9bbd0;font-size:14px}
+footer{text-align:center;padding:25px;color:#a9aabd}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎮 KARAPETYANS GAMES</h1>
+  <p>Play games. Meet friends. Have fun!</p>
+</header>
+
+<nav>
+  <button onclick="go('games')">🎮 Games</button>
+  <button onclick="go('friends')">👥 Friends</button>
+  <button onclick="go('chat')">💬 Chat</button>
+  <button onclick="go('profile')">👤 Profile</button>
+</nav>
+
+<main>
+  <section id="games">
+    <h2>🎮 Games</h2>
+    <div class="games">
+      <div class="game">
+        <div class="emoji">🔢</div>
+        <h3>Guess the Number</h3>
+        <p>Guess a number from 1 to 10!</p>
+        <input id="guess" type="number" min="1" max="10" placeholder="Your number">
+        <button onclick="checkGuess()">Play</button>
+        <p id="result">Good luck!</p>
+      </div>
+      <div class="game">
+        <div class="emoji">⚡</div>
+        <h3>Quick Click</h3>
+        <p>How many times can you click in 5 seconds?</p>
+        <p id="score">Score: 0</p>
+        <button id="clicker" onclick="clickGame()">Start / Click!</button>
+        <p id="timer">Ready?</p>
+      </div>
+      <div class="game">
+        <div class="emoji">🧩</div>
+        <h3>More Games</h3>
+        <p>More exciting games are coming soon!</p>
+        <button onclick="alert('New games are coming soon!')">Coming Soon</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="friends">
+    <h2>👥 Friends</h2>
+    <p>Meet players and make new friends!</p>
+    <p class="small">The friends system will be added in a future version.</p>
+  </section>
+
+  <section id="chat">
+    <h2>💬 Community Chat</h2>
+    <p class="small">Demo chat: messages appear on this device only. Live chat will need a server.</p>
+    <div id="messages">Welcome to KARAPETYANS GAMES! 🎉</div>
+    <input id="chatName" maxlength="20" placeholder="Your nickname">
+    <input id="chatText" maxlength="200" placeholder="Write a message...">
+    <button onclick="sendMessage()">Send</button>
+  </section>
+
+  <section id="profile">
+    <h2>👤 Your Profile</h2>
+    <label for="nickname">Choose your nickname:</label>
+    <input id="nickname" maxlength="20" placeholder="Enter your nickname">
+    <button onclick="saveProfile()">Save Nickname</button>
+    <p id="profileResult">Welcome, player!</p>
+    <p class="small">This demo profile is saved only in this browser.</p>
+  </section>
+</main>
+
+<footer>© 2026 KARAPETYANS GAMES • Play fair, have fun!</footer>
+
+<script>
+function go(id){
+  document.getElementById(id).scrollIntoView({behavior:"smooth"});
+}
+
+let secret=Math.floor(Math.random()*10)+1;
+function checkGuess(){
+  const value=Number(document.getElementById("guess").value);
+  const result=document.getElementById("result");
+  if(value<1||value>10){
+    result.textContent="Enter a number from 1 to 10!";
+  }else if(value===secret){
+    result.textContent="🎉 Correct! You win!";
+    secret=Math.floor(Math.random()*10)+1;
+  }else{
+    result.textContent=value<secret?"Too low! Try again.":"Too high! Try again.";
+  }
+}
+
+let clicks=0,playing=false,started=false;
+function clickGame(){
+  if(!started){
+    clicks=0;playing=true;started=true;
+    document.getElementById("score").textContent="Score: 0";
+    document.getElementById("timer").textContent="5 seconds left!";
+    const end=Date.now()+5000;
+    const interval=setInterval(()=>{
+      const left=Math.max(0,Math.ceil((end-Date.now())/1000));
+      document.getElementById("timer").textContent=left+" seconds left!";
+      if(Date.now()>=end){
+        clearInterval(interval);
+        playing=false;started=false;
+        document.getElementById("timer").textContent="Time's up! Final score: "+clicks;
+      }
+    },100);
+    clicks++;
+    document.getElementById("score").textContent="Score: "+clicks;
+  }else if(playing){
+    clicks++;
+    document.getElementById("score").textContent="Score: "+clicks;
+  }
+}
+
+function saveProfile(){
+  const name=document.getElementById("nickname").value.trim();
+  if(!name){alert("Please enter a nickname!");return;}
+  try{localStorage.setItem("kgNickname",name);}catch(e){}
+  document.getElementById("profileResult").textContent="Welcome, "+name+"! 🎮";
+  document.getElementById("chatName").value=name;
+}
+
+function sendMessage(){
+  const name=document.getElementById("chatName").value.trim()||"Player";
+  const input=document.getElementById("chatText");
+  const text=input.value.trim();
+  if(!text)return;
+  const messages=document.getElementById("messages");
+  const line=document.createElement("p");
+  line.textContent=name+": "+text;
+  messages.appendChild(line);
+  messages.scrollTop=messages.scrollHeight;
+  input.value="";
+}
+
+try{
+  const saved=localStorage.getItem("kgNickname");
+  if(saved){
+    document.getElementById("nickname").value=saved;
+    document.getElementById("chatName").value=saved;
+    document.getElementById("profileResult").textContent="Welcome back, "+saved+"! 🎮";
+  }
+}catch(e){}
+</script>
+</body>
+</html>
